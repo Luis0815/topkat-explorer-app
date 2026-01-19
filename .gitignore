@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.streamlit/
+results/*
+.ipynb_checkpoints/
+
+.RData
+.Rhistory
+
