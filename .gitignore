@@ -1,7 +1,4 @@
-*.gz
-*.rds
-*.csv
-*.csv.gz
+data_selection/
 
 __pycache__/
 *.pyc
