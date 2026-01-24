@@ -173,82 +173,92 @@
       )
     }
     
+# ============================================================ 
+# === UI del módulo TopKAT === 
+# ============================================================
     
-    
-    # ============================================================
-    # === UI del módulo TopKAT ===
-    # ============================================================
-    topkat_ui <- function(id) {
-      ns <- NS(id)
-      fluidPage(
-        titlePanel("TopKAT Explorer — módulo"),
-        sidebarLayout(
-          sidebarPanel(
-            width = 3,
-            pickerInput(
-              ns("base_dir"),
-              "Carpeta base del análisis",
-              choices = list.dirs(getwd(), recursive = TRUE, full.names = TRUE),
-              selected = getwd()
-            ),
-            
-            uiOutput(ns("csv_selector")),
-            uiOutput(ns("rds_dir_selector")),
-    
-            actionButton(ns("load_all"), "Cargar metadata y RDS"),
+   topkat_ui <- function(id) {
+  ns <- NS(id)
+
+  # ---- lógica previa (FUERA del UI) ----
+  allowed_dirs <- c("data_selection", "data_circulos")
+
+  base_dirs <- list.dirs(getwd(), recursive = FALSE, full.names = TRUE)
+  base_dirs <- base_dirs[basename(base_dirs) %in% allowed_dirs]
+
+  fluidPage(
+    titlePanel("TopKAT Explorer — módulo"),
+    sidebarLayout(
+      sidebarPanel(
+        width = 3,
+
+        pickerInput(
+          ns("base_dir"),
+          "Carpeta base del análisis",
+          choices = base_dirs,
+          selected = if (length(base_dirs) > 0) base_dirs[1] else NULL
+        ),
+
+        uiOutput(ns("csv_selector")),
+        uiOutput(ns("rds_dir_selector")),
+
+        actionButton(ns("load_all"), "Cargar metadata y RDS"),
+        hr(),
+        uiOutput(ns("available_categories_ui")),
+        hr(),
+        selectInput(ns("cmp_choice"), "Elegir comparación", choices = names(comparaciones_list)),
+        numericInput(ns("nA"), "N muestras grupo A", value = 3, min = 1),
+        numericInput(ns("nB"), "N muestras grupo B", value = 3, min = 1),
+        numericInput(ns("seedA"), "Seed Grupo A", value = 123),
+        numericInput(ns("seedB"), "Seed Grupo B", value = 456),
+        actionButton(ns("run_select"), "Seleccionar muestras y generar subset"),
+        hr(),
+        actionButton(ns("run_topkat"), "Ejecutar TopKAT y scale_importance"),
+        hr(),
+        verbatimTextOutput(ns("status"))
+      ),
+      mainPanel(
+        width = 9,
+        tabsetPanel(
+          tabPanel("Resumen",
+            h4("Tabla pid_info"),
+            DTOutput(ns("pid_info_table")) %>% withSpinner(),
             hr(),
-            uiOutput(ns("available_categories_ui")),
+            h4("Conteos por categoría y FA"),
+            DTOutput(ns("counts_table")) %>% withSpinner(),
             hr(),
-            selectInput(ns("cmp_choice"), "Elegir comparación", choices = names(comparaciones_list)),
-            numericInput(ns("nA"), "N muestras grupo A", value = 3, min = 1),
-            numericInput(ns("nB"), "N muestras grupo B", value = 3, min = 1),
-            numericInput(ns("seedA"), "Seed Grupo A", value = 123),
-            numericInput(ns("seedB"), "Seed Grupo B", value = 456),
-            actionButton(ns("run_select"), "Seleccionar muestras y generar subset"),
-            hr(),
-            actionButton(ns("run_topkat"), "Ejecutar TopKAT y scale_importance"),
-            hr(),
-            verbatimTextOutput(ns("status"))
+            h4("Conteos por subcategoría y FA"),
+            DTOutput(ns("subcounts_table")) %>% withSpinner()
           ),
-          mainPanel(
-            width = 9,
-            tabsetPanel(
-              tabPanel("Resumen",
-             h4("Tabla pid_info"),
-             DTOutput(ns("pid_info_table")) %>% withSpinner(),
-             hr(),
-             h4("Conteos por categoría y FA"),
-             DTOutput(ns("counts_table")) %>% withSpinner(),
-             hr(),
-             h4("Conteos por subcategoría y FA"),
-             DTOutput(ns("subcounts_table")) %>% withSpinner()
-    ),
-              tabPanel("Selección",
-                       h4("Disponibilidad (Grupo A / Grupo B)"),
-                       DTOutput(ns("avail_A")),
-                       DTOutput(ns("avail_B")),
-                       hr(),
-                       h4("PIDs seleccionados"),
-                       DTOutput(ns("selected_pids_table"))
-              ),
-              tabPanel("Resultados",
-                       h4("TopKAT summary"),
-                       verbatimTextOutput(ns("topkat_summary")),
-                       hr(),
-                       h4("scale_importance (PNG generado)"),
-                       uiOutput(ns("scale_png_ui"))
-              )
-            )
+          tabPanel("Selección",
+            h4("Disponibilidad (Grupo A / Grupo B)"),
+            DTOutput(ns("avail_A")),
+            DTOutput(ns("avail_B")),
+            hr(),
+            h4("PIDs seleccionados"),
+            DTOutput(ns("selected_pids_table"))
+          ),
+          tabPanel("Resultados",
+            h4("TopKAT summary"),
+            verbatimTextOutput(ns("topkat_summary")),
+            hr(),
+            h4("scale_importance (PNG generado)"),
+            uiOutput(ns("scale_png_ui"))
           )
         )
       )
-    }
-    
+    )
+  )
+}
+
     # ============================================================
     # === Server del módulo TopKAT ===
     # ============================================================
-    topkat_server <- function(id) {
+   topkat_server <- function(id, shared_pid_df, shared_metadata, shared_outdir) {
+
+
       moduleServer(id, function(input, output, session) {
+          output$sample_warning <- renderUI(NULL)
         ns <- session$ns
     
         rv <- reactiveValues(
@@ -324,6 +334,8 @@
     
     
             rv$data1 <- data1.df
+              shared_metadata(data1.df)
+
             rv$pid_info <- pid_info
             rv$rips_full <- safe_read_rds(file.path(out_dir,"rips_list.rds"))
             rv$K0_full   <- safe_read_rds(file.path(out_dir,"K_dim0.rds"))
@@ -442,6 +454,7 @@
           subset_dir <- file.path(input$out_dir,
                                   paste0("subset_TOPKAT_",format(Sys.time(),"%Y%m%d_%H%M%S")))
           dir.create(subset_dir, recursive=TRUE)
+            shared_outdir(subset_dir)
             
     rv$subset_dir <- subset_dir
     rv$data_file_path <- input$data_file
@@ -460,7 +473,7 @@
     
           # Guardar etiquetas y subset_dir en reactiveValues para referencia
           rv$pid_df_final <- pid_df_final
-          rv$subset_dir <- subset_dir
+          shared_pid_df(pid_df_final)    
           rv$A_label <- A_label
           rv$B_label <- B_label
     
@@ -740,7 +753,7 @@
         sidebarLayout(
           sidebarPanel(
             numericInput(ns("threshold"),"Threshold (ε)", value=15, min=1),
-            textInput(ns("outdir"),"Directorio donde buscar subsets (opcional)", value=DEFAULT_OUTPUT),
+            #textInput(ns("outdir"),"Directorio donde buscar subsets (opcional)", value=DEFAULT_OUTPUT),   #(ya no es necesario)
                       selectInput(
               ns("phenotype_col"),
               "Clasificación celular a usar:",
@@ -751,7 +764,8 @@
               selected = "type"
             ),
     
-            actionButton(ns("run"),"Generar conectividades")
+            actionButton(ns("run"),"Generar conectividades"),
+              uiOutput(ns("sample_warning"))
           ),
           mainPanel(
             h4("Estatus del proceso"),
@@ -771,48 +785,49 @@
       )
     }
     
-    connectivity_server <- function(id) {
-      moduleServer(id, function(input, output, session) {
-        ns <- session$ns
-        output$status <- renderText("Listo para iniciar (Connectivity).")
-    
-        observeEvent(input$run, {
-    
-          withProgress(message="Procesando...", value = 0, {
-    
-            # ------------------------------------------
-            # 1) Buscar el PID_seleccionados_final.csv más reciente
-            # ------------------------------------------
-            output$status <- renderText("Buscando PID_seleccionados_final.csv (último)...")
-    
-            search_dir <- input$outdir
-            if (is.null(search_dir) || search_dir == "") search_dir <- BASE_DIR
-              
-            matches <- list.files(path = search_dir, pattern = "PID_seleccionados_final\\.csv$",
-                                  recursive = TRUE, full.names = TRUE)
-    
-            # fallback al DEFAULT_PID_FILE si no hay matches
-            if (length(matches) == 0) {
-              output$status <- renderText("ERROR: No se encontró ningún PID_seleccionados_final.csv.")
-              return()
-            }
-            
-            info <- file.info(matches)
-            pid_file <- rownames(info[which.max(info$mtime), , drop = FALSE])
-    
-            output$status <- renderText(paste("Usando PID CSV:", pid_file))
-            pid_df <- read.csv(pid_file, stringsAsFactors = FALSE)
-    
-            incProgress(0.15)
-    
-            if (!"grupo" %in% colnames(pid_df)) {
-              output$status <- renderText("ERROR: El archivo PID no tiene columna 'grupo'")
-              return()
-            }
-    
-            # Carpeta donde se guardarán las imágenes -> carpeta del PID encontrado
-            pid_dir <- dirname(pid_file)
-    
+connectivity_server <- function(id, shared_pid_df, shared_metadata, shared_outdir) {
+
+  moduleServer(id, function(input, output, session) {
+
+    ns <- session$ns
+
+    # Estado inicial
+    output$status <- renderText("Listo para iniciar (Connectivity).")
+    output$sample_warning <- renderUI(NULL)
+
+    observeEvent(input$run, {
+
+      withProgress(message = "Procesando...", value = 0, {
+
+        # ------------------------------------------
+        # 1) Obtener selección de PIDs desde TopKAT (en memoria)
+        # ------------------------------------------
+        pid_df <- shared_pid_df()
+
+        if (is.null(pid_df)) {
+          output$status <- renderText("ERROR: No hay selección de PIDs desde TopKAT.")
+          return()
+        }
+
+        if (!"grupo" %in% colnames(pid_df)) {
+          output$status <- renderText("ERROR: La selección no tiene columna 'grupo'.")
+          return()
+        }
+
+        # ------------------------------------------
+        # Directorio de salida (subset_TOPKAT_*)
+        # ------------------------------------------
+        pid_dir <- shared_outdir()
+
+        if (is.null(pid_dir)) {
+          output$status <- renderText(
+            "ERROR: No se encontró la carpeta de salida de TopKAT."
+          )
+          return()
+        }
+
+        incProgress(0.15)
+
             # ------------------------------------------
             # 2) Obtener nombres reales de los grupos desde 'group_name' si existe
             # ------------------------------------------
@@ -836,7 +851,13 @@
             # 3) Filtrar datos y calcular matrices promedio
             # ------------------------------------------
     
-            df <- read.csv(rv$data_file_path, stringsAsFactors = FALSE)
+            df <- shared_metadata()
+            
+            if (is.null(df)) {
+              output$status <- renderText("ERROR: No hay metadata cargada desde TopKAT.")
+              return()
+            }
+
     
     
     
@@ -880,6 +901,25 @@
     
             M_A <- M_A / max(nA,1)
             M_B <- M_B / max(nB,1)
+
+          n_total <- nA + nB
+
+if (n_total < 50) {
+  output$sample_warning <- renderUI({
+    tags$div(
+      style = "color:#b30000; font-weight:bold;",
+      paste0(
+        "Advertencia estadística: se seleccionaron ",
+        n_total,
+        " muestras (A=", nA, ", B=", nB, "). ",
+        "Para resultados confiables se recomiendan al menos 50 muestras."
+      )
+    )
+  })
+} else {
+  output$sample_warning <- renderUI(NULL)
+}
+
     
             incProgress(0.25)
     
@@ -972,9 +1012,19 @@
     # ============================================================
     # === SERVER PRINCIPAL: Arranca los módulos ===
     # ============================================================
-    server <- function(input, output, session) {
-      topkat_server("topkat")
-      connectivity_server("connect")
-    }
+ server <- function(input, output, session) {
+
+  # Estado compartido entre módulos
+  shared_pid_df   <- reactiveVal(NULL)
+  shared_metadata <- reactiveVal(NULL)
+  shared_outdir <- reactiveVal(NULL)
+
+
+topkat_server("topkat", shared_pid_df, shared_metadata, shared_outdir)
+connectivity_server("connect", shared_pid_df, shared_metadata, shared_outdir)
+
+
+}
+
     
     shinyApp(ui, server)
