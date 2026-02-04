@@ -60,6 +60,18 @@ comparaciones_list <- list(
     split = TRUE
   ),
 
+"carcinoma_in_situ FA vs NOFA" =
+  list(
+    A = list(type = "carcinoma_in_situ", FA = "FA"),
+    B = list(type = "carcinoma_in_situ", FA = "NOFA")
+  ),
+
+"carcinoma_invasive FA vs NOFA" =
+  list(
+    A = list(type = "carcinoma_invasive", FA = "FA"),
+    B = list(type = "carcinoma_invasive", FA = "NOFA")
+  ),
+    
   "carcinoma_in_situ vs carcinoma_in_situ (split)" =
     list(
       A = list(type = "carcinoma_in_situ", FA = NULL),
@@ -211,6 +223,7 @@ topkat_ui <- function(id) {
         numericInput(ns("seedA"), "Seed Grupo A", value = 123),
         numericInput(ns("seedB"), "Seed Grupo B", value = 456),
         actionButton(ns("run_select"), "Seleccionar muestras y generar subset"),
+             uiOutput(ns("sample_warning")),
         hr(),
         actionButton(ns("run_topkat"), "Ejecutar TopKAT y scale_importance"),
         hr(),
@@ -257,6 +270,7 @@ topkat_server <- function(id, shared_pid_df, shared_metadata, shared_outdir) {
   moduleServer(id, function(input, output, session) {
     output$sample_warning <- renderUI(NULL)
     ns <- session$ns
+      output$sample_warning <- renderUI(NULL)
 
     rv <- reactiveValues(
       data_loaded = FALSE,
@@ -315,6 +329,7 @@ topkat_server <- function(id, shared_pid_df, shared_metadata, shared_outdir) {
 
     observeEvent(input$load_all, {
       output$status <- renderText("Cargando archivos ...")
+        output$sample_warning <- renderUI(NULL)
       tryCatch({
         data_file <- input$data_file
         out_dir   <- input$out_dir
@@ -377,97 +392,206 @@ topkat_server <- function(id, shared_pid_df, shared_metadata, shared_outdir) {
       datatable(tab)
     })
 
-    observeEvent(input$run_select,{
-      req(rv$data_loaded)
-      output$status <- renderText("Determinando disponibilidad...")
+observeEvent(input$run_select,{
+  req(rv$data_loaded)
+  output$status <- renderText("Determinando disponibilidad...")
+  
+  # Limpiar advertencia previa
+  output$sample_warning <- renderUI(NULL)
 
-      cmp_sel <- comparaciones_list[[input$cmp_choice]]
-      pid_info <- rv$pid_info
-      is_split <- isTRUE(cmp_sel$split)
-      if (!is.null(input$cats)) pid_info <- pid_info %>% filter(category %in% input$cats)
+  cmp_sel <- comparaciones_list[[input$cmp_choice]]
+  pid_info <- rv$pid_info
+  is_split <- isTRUE(cmp_sel$split)
+  if (!is.null(input$cats)) pid_info <- pid_info %>% filter(category %in% input$cats)
 
-      cmpA <- cmp_sel$A
-      cmpB <- cmp_sel$B
+  cmpA <- cmp_sel$A
+  cmpB <- cmp_sel$B
 
-      same_type <- identical(cmpA$type, cmpB$type) &&
-                   identical(cmpA$FA, cmpB$FA)  
+  same_type <- identical(cmpA$type, cmpB$type) &&
+               identical(cmpA$FA, cmpB$FA)  
 
-      dispA <- pid_info %>% filter(category == cmpA$type)
-      if (!is.null(cmpA$FA)) dispA <- dispA %>% filter(FA_status==cmpA$FA)
+  # MODIFICACIÓN: Determinar si estamos buscando una subcategoría o categoría
+  # Si el tipo contiene "carcinoma_in_situ", "carcinoma_invasive", etc., buscar en subcategory
+  # De lo contrario, buscar en category
+  
+  # Función para determinar dónde buscar
+  get_filter_column <- function(type_name) {
+    if (type_name %in% c("carcinoma_in_situ", "carcinoma_invasive", 
+                         "HG_dysplasia", "LG_dysplasia",
+                         "stroma_ad_carcinoma_in_situ", "stroma_ad_carcinoma_invasive",
+                         "stroma_ad_HG_dysplasia", "stroma_ad_LG_dysplasia")) {
+      return("subcategory")
+    } else {
+      return("category")
+    }
+  }
+  
+  # Columnas para filtrar
+  colA <- get_filter_column(cmpA$type)
+  colB <- get_filter_column(cmpB$type)
+  
+  # Filtrar grupo A
+  dispA <- pid_info %>% filter(!!sym(colA) == cmpA$type)
+  if (!is.null(cmpA$FA)) dispA <- dispA %>% filter(FA_status==cmpA$FA)
 
-      dispB <- pid_info %>% filter(category == cmpB$type)
-      if (!is.null(cmpB$FA)) dispB <- dispB %>% filter(FA_status==cmpB$FA)
+  # Filtrar grupo B
+  dispB <- pid_info %>% filter(!!sym(colB) == cmpB$type)
+  if (!is.null(cmpB$FA)) dispB <- dispB %>% filter(FA_status==cmpB$FA)
 
-        # ------------------------------------------------
-        # Caso especial: comparación intra-categoría
-        # ------------------------------------------------
-        if (is_split && same_type) {
-          dispB <- dispA  }
+  # ------------------------------------------------
+  # Caso especial: comparación intra-categoría
+  # ------------------------------------------------
+  if (is_split && same_type) {
+    dispB <- dispA  
+  }
 
-      rv$availA <- dispA
-      rv$availB <- dispB
+  rv$availA <- dispA
+  rv$availB <- dispB
 
-      if (input$nA > nrow(dispA) || input$nB > nrow(dispB)) {
-        output$status <- renderText("nA o nB mayor que disponibilidad.")
+  # ============================================
+  # NUEVO: Verificar disponibilidad pero NO detenerse
+  # ============================================
+  if (input$nA > nrow(dispA) || input$nB > nrow(dispB)) {
+    # Solo mostrar advertencia, no detener
+    avail_msg <- paste(" ADVERTENCIA: nA o nB mayor que disponibilidad. Disponibles: A=", 
+                      nrow(dispA), ", B=", nrow(dispB))
+    
+    # Si no hay suficientes muestras, ajustar a lo disponible
+    adjusted_nA <- min(input$nA, nrow(dispA))
+    adjusted_nB <- min(input$nB, nrow(dispB))
+    
+    if (adjusted_nA == 0 || adjusted_nB == 0) {
+      output$status <- renderText(paste("ERROR: No hay muestras suficientes. Disponibles: A=", 
+                                       nrow(dispA), ", B=", nrow(dispB)))
+      return(NULL)  # Solo detener si no hay NINGUNA muestra
+    }
+    
+    # Ajustar los valores
+    updateNumericInput(session, "nA", value = adjusted_nA)
+    updateNumericInput(session, "nB", value = adjusted_nB)
+    
+    # Continuar con los valores ajustados
+    nA_to_use <- adjusted_nA
+    nB_to_use <- adjusted_nB
+  } else {
+    nA_to_use <- input$nA
+    nB_to_use <- input$nB
+  }
+
+  if (is_split && same_type) {
+    total_needed <- nA_to_use + nB_to_use
+    if (total_needed > nrow(dispA)) {
+      # Ajustar a lo disponible
+      available_total <- nrow(dispA)
+      nA_to_use <- min(nA_to_use, floor(available_total/2))
+      nB_to_use <- min(nB_to_use, available_total - nA_to_use)
+      
+      if (nA_to_use == 0 || nB_to_use == 0) {
+        output$status <- renderText(paste("ERROR: No hay muestras suficientes para split disjunto. Disponibles:", nrow(dispA)))
         return(NULL)
       }
+      
+      updateNumericInput(session, "nA", value = nA_to_use)
+      updateNumericInput(session, "nB", value = nB_to_use)
+    }
 
-      if (is_split && same_type) {
-        total_needed <- input$nA + input$nB
-        if (total_needed > nrow(dispA)) {
-          output$status <- renderText("No hay suficientes muestras para split disjunto.")
-          return(NULL)
-        }
+    selA <- select_reproducible(dispA, nA_to_use, input$seedA)
 
-        selA <- select_reproducible(dispA, input$nA, input$seedA)
+    remaining <- dispA %>%
+      filter(!PID %in% selA$PID)
 
-        remaining <- dispA %>%
-          filter(!PID %in% selA$PID)
+    selB <- select_reproducible(remaining, nB_to_use, input$seedB)
+  } else {
+    selA <- select_reproducible(dispA, nA_to_use, input$seedA)
+    selB <- select_reproducible(dispB, nB_to_use, input$seedB)
+  }
 
-        selB <- select_reproducible(remaining, input$nB, input$seedB)
-      } else {
-        selA <- select_reproducible(dispA, input$nA, input$seedA)
-        selB <- select_reproducible(dispB, input$nB, input$seedB)
-      }
+  # --- definimos etiquetas A/B desde la comparación elegida (incluye FA si aplica) ---
+  A_label <- make_label_from_cmp(cmpA)
+  B_label <- make_label_from_cmp(cmpB)
 
-      # --- definimos etiquetas A/B desde la comparación elegida (incluye FA si aplica) ---
-      A_label <- make_label_from_cmp(cmpA)
-      B_label <- make_label_from_cmp(cmpB)
+  # añadimos columnas 'grupo' (A/B) y 'group_name' (etiqueta legible)
+  selA <- selA %>% mutate(grupo = "A", group_name = A_label)
+  selB <- selB %>% mutate(grupo = "B", group_name = B_label)
 
-      # añadimos columnas 'grupo' (A/B) y 'group_name' (etiqueta legible)
-      selA <- selA %>% mutate(grupo = "A", group_name = A_label)
-      selB <- selB %>% mutate(grupo = "B", group_name = B_label)
-
-      pid_df_final <- bind_rows(selA, selB) %>% mutate(PID_chr = as.character(PID))
-
-      subset_dir <- file.path(input$out_dir,
-                              paste0("subset_TOPKAT_",format(Sys.time(),"%Y%m%d_%H%M%S")))
-      dir.create(subset_dir, recursive=TRUE)
-      shared_outdir(subset_dir)
-        
-      rv$subset_dir <- subset_dir
-      rv$data_file_path <- input$data_file
-
-      selected_pids_chr <- as.character(pid_df_final$PID)
-
-      create_subset_files(
-        selected_pids_chr,
-        rv$rips_full, rv$K0_full, rv$K1_full, rv$PIDs_full,
-        subset_dir
-      )
-
-      # Guardamos el CSV con la columna group_name incluida
-      safe_write_csv(pid_df_final, file.path(subset_dir,"PID_seleccionados_final.csv"))
-
-      # Guardar etiquetas y subset_dir en reactiveValues para referencia
-      rv$pid_df_final <- pid_df_final
-      shared_pid_df(pid_df_final)    
-      rv$A_label <- A_label
-      rv$B_label <- B_label
-
-      output$status <- renderText(paste("✔ Subset creado en:", subset_dir,
-                                        "\nA =", A_label, " | B =", B_label))
+  pid_df_final <- bind_rows(selA, selB) %>% mutate(PID_chr = as.character(PID))
+  
+  # ============================================================
+  # === VERIFICACIÓN DE TAMAÑO DE MUESTRA (ADVERTENCIA SOLO) ===
+  # ============================================================
+  n_total <- nrow(pid_df_final)
+  nA <- sum(pid_df_final$grupo == "A")
+  nB <- sum(pid_df_final$grupo == "B")
+  
+  # Crear mensaje de advertencia si hay menos de 50 muestras
+  warning_msg <- NULL
+  if (n_total < 50) {
+    warning_msg <- tags$div(
+      style = "color:#b30000; font-weight:bold; background-color:#ffe6e6; padding:10px; border-radius:5px; margin:10px 0; border:1px solid #ff9999;",
+      tags$h5(" ADVERTENCIA ESTADÍSTICA", style = "margin-top:0;"),
+      tags$p(style = "margin-bottom:5px;",
+        paste0("Se seleccionaron ", n_total, " muestras totales (A=", nA, ", B=", nB, ").")),
+      tags$p(style = "margin-top:5px;",
+        "Para resultados confiables en análisis TopKAT se recomiendan al menos 50 muestras."),
+      tags$p(style = "margin-top:5px; font-style:italic;",
+        "El análisis continuará pero los resultados podrían tener limitaciones estadísticas.")
+    )
+    
+    # Mostrar la advertencia
+    output$sample_warning <- renderUI({
+      warning_msg
     })
+  } else {
+    # Si hay 50 o más muestras, limpiar cualquier advertencia previa
+    output$sample_warning <- renderUI(NULL)
+  }
+
+  # ============================================================
+  # === SIEMPRE GENERAR EL SUBSET (sin importar el tamaño) ===
+  # ============================================================
+  subset_dir <- file.path(input$out_dir,
+                          paste0("subset_TOPKAT_",format(Sys.time(),"%Y%m%d_%H%M%S")))
+  dir.create(subset_dir, recursive=TRUE)
+  shared_outdir(subset_dir)
+    
+  rv$subset_dir <- subset_dir
+  rv$data_file_path <- input$data_file
+
+  selected_pids_chr <- as.character(pid_df_final$PID)
+
+  create_subset_files(
+    selected_pids_chr,
+    rv$rips_full, rv$K0_full, rv$K1_full, rv$PIDs_full,
+    subset_dir
+  )
+
+  # Guardamos el CSV con la columna group_name incluida
+  safe_write_csv(pid_df_final, file.path(subset_dir,"PID_seleccionados_final.csv"))
+
+  # Guardar etiquetas y subset_dir en reactiveValues para referencia
+  rv$pid_df_final <- pid_df_final
+  shared_pid_df(pid_df_final)    
+  rv$A_label <- A_label
+  rv$B_label <- B_label
+
+  # ============================================================
+  # === MENSAJE DE ÉXITO (SIEMPRE) ===
+  # ============================================================
+  status_msg <- paste("✔ Subset creado en:", subset_dir,
+                      "\nA =", A_label, " | B =", B_label,
+                      "\nMuestras totales:", n_total, "(A:", nA, "| B:", nB, ")",
+                      "\nFiltrado por:", colA, "y", colB)
+  
+  if (n_total < 50) {
+    status_msg <- paste0(status_msg, "\n ADVERTENCIA: Menos de 50 muestras totales")
+  }
+  
+  if (exists("avail_msg")) {
+    status_msg <- paste0(status_msg, "\n", avail_msg)
+  }
+  
+  output$status <- renderText(status_msg)
+})
 
     output$avail_A <- renderDT({ req(rv$availA); datatable(rv$availA) })
     output$avail_B <- renderDT({ req(rv$availB); datatable(rv$availB) })
@@ -507,19 +631,81 @@ topkat_server <- function(id, shared_pid_df, shared_metadata, shared_outdir) {
         rv$topkat_res <- res_topkat
         saveRDS(res_topkat,file.path(rv$subset_dir,"TopKAT_result.rds"))
 
+          # 2. Guardar resultados principales como CSV
+if (!is.null(res_topkat$p.vals)) {
+  # Crear dataframe con resultados por dimensión
+  topkat_detailed <- data.frame(
+    Dimension = c("Overall", names(res_topkat$p.vals)),
+    P_value = c(res_topkat$overall.pval, as.numeric(res_topkat$p.vals)),
+    Description = c("Overall test", rep("Dimension-specific", length(res_topkat$p.vals))),
+    Omega = c(NA, if (!is.null(res_topkat$omega.list)) res_topkat$omega.list else rep(NA, length(res_topkat$p.vals)))
+  )
+  
+  write.csv(topkat_detailed,
+            file.path(rv$subset_dir, "TopKAT_results_detailed.csv"),
+            row.names = FALSE)
+  
+  # Crear resumen ejecutivo
+  topkat_summary <- data.frame(
+    Metric = c("Overall_p_value", "Significant_05", "Significant_01", "Min_p_value", "Date"),
+    Value = c(
+      sprintf("%.6f", res_topkat$overall.pval),
+      sum(res_topkat$p.vals < 0.05),
+      sum(res_topkat$p.vals < 0.01),
+      sprintf("%.6f", min(res_topkat$p.vals)),
+      as.character(Sys.time())
+    )
+  )
+  
+  write.csv(topkat_summary,
+            file.path(rv$subset_dir, "TopKAT_summary.csv"),
+            row.names = FALSE)
+}
+
         incProgress(0.80, detail="scale_importance...")
 
         res_scale_import <- scale_importance(
           pd.list    = rips_sub,
           y          = y,
           omega.list = c(0,0.5,1),
-          threshold  = 500,
+          threshold  = 100,
           PIDs       = seq_along(PIDs_sub),
           outcome.type = "binary"
         )
 
         rv$res_scale_import <- res_scale_import
         saveRDS(res_scale_import,file.path(rv$subset_dir,"scale_importance_result.rds"))
+
+              # 2. Guardar como CSV
+if (!is.null(res_scale_import$threshold.seq) && !is.null(res_scale_import$pvals)) {
+  scale_df <- data.frame(
+    Threshold = res_scale_import$threshold.seq,
+    P_value = res_scale_import$pvals,
+    Log10_p_value = log10(res_scale_import$pvals + 1e-100),  # Evitar -Inf
+    Significant_05 = res_scale_import$pvals < 0.05,
+    Significant_01 = res_scale_import$pvals < 0.01
+  )
+  
+  write.csv(scale_df,
+            file.path(rv$subset_dir, "scale_importance_results.csv"),
+            row.names = FALSE)
+  
+  # Guardar estadísticas resumidas
+  min_p <- min(res_scale_import$pvals, na.rm = TRUE)
+  opt_thresh <- res_scale_import$min.thresh
+  
+  scale_summary <- data.frame(
+    Optimal_threshold = opt_thresh,
+    Minimum_p_value = min_p,
+    Threshold_at_min_p = res_scale_import$threshold.seq[which.min(res_scale_import$pvals)],
+    Number_significant_05 = sum(res_scale_import$pvals < 0.05, na.rm = TRUE),
+    Date_analysis = as.character(Sys.time())
+  )
+  
+  write.csv(scale_summary,
+            file.path(rv$subset_dir, "scale_importance_summary.csv"),
+            row.names = FALSE)
+}
 
         # -------------------------------------------------------
         #   GENERAR PNGs — NORMAL Y LOG10 (se guardan en subset_dir)
@@ -1033,39 +1219,77 @@ connectivity_markers_server <- function(id, shared_pid_df, shared_metadata, shar
           )
           
           # Versión normalizada por fila (0-100%)
-          plot_row_scaled <- function(mat, title) {
-            if (nrow(mat) == 0 || ncol(mat) == 0) {
-              return(ggplot() + geom_text(aes(x = 0.5, y = 0.5, label = "No hay datos")) + theme_void())
-            }
-            
-            df_melt <- melt(mat)
-            colnames(df_melt) <- c("row", "col", "value")
-            df_melt$value <- as.numeric(as.character(df_melt$value))
-            
-            df_melt <- df_melt %>%
-              group_by(row) %>%
-              mutate(
-                max_row = max(value, na.rm = TRUE),
-                value_norm = ifelse(max_row > 0, value / max_row * 100, 0)
-              ) %>%
-              ungroup()
-            
-            ggplot(df_melt, aes(x = col, y = row, fill = value_norm)) +
-              geom_tile(color = "white") +
-              geom_text(aes(label = round(value_norm, 1)), size = 2.5) +
-              scale_fill_viridis(option = "turbo", limits = c(0, 100), 
-                               name = "% del máximo\npor fila") +
-              theme_minimal() +
-              labs(x = "Tipo celular destino", y = "Tipo celular origen", title = title) +
-              theme(
-                axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
-                axis.text.y = element_text(size = 8),
-                plot.title = element_text(size = 12)
-              )
-          }
+          plot_connectivity_matrix_row_scaled <- function(mat, title, text_size = 2.5) {
+  if (nrow(mat) == 0 || ncol(mat) == 0) {
+    return(ggplot() + geom_text(aes(x = 0.5, y = 0.5, label = "No hay datos")) + theme_void())
+  }
+  
+  df <- reshape2::melt(mat)
+  colnames(df) <- c("row", "col", "value")
+  
+  # ---- FIX CRÍTICO: forzar valor numérico ----
+  df$value <- as.numeric(as.character(df$value))
+  
+  # normalización por fila (0–100 %)
+  df <- df %>%
+    group_by(row) %>%
+    mutate(
+      max_row = max(value, na.rm = TRUE),
+      value_norm = ifelse(max_row > 0, value / max_row * 100, 0)
+    ) %>%
+    ungroup()
+  
+  n_cols <- length(unique(df$col))
+  
+  df_max <- df %>%
+    distinct(row, max_row) %>%
+    mutate(x_pos = n_cols + 0.6)
+  
+  ggplot(df, aes(x = col, y = row)) +
+    geom_tile(aes(fill = value_norm), color = "white") +
+    geom_text(
+      aes(label = round(value_norm, 1)),
+      size = text_size
+    ) +
+    geom_text(
+      data = df_max,
+      aes(
+        x = x_pos,
+        y = row,
+        label = paste0("", round(max_row, 1))
+      ),
+      hjust = 0,
+      size = text_size * 1.1,
+      inherit.aes = FALSE
+    ) +
+    scale_fill_viridis(
+      option = "turbo",
+      limits = c(0, 100),
+      name = "% del máximo\npor fila"
+    ) +
+    scale_x_discrete(expand = expansion(add = c(0, 2))) +
+    theme_minimal() +
+    labs(
+      x = "Tipo celular destino",
+      y = "Tipo celular origen",
+      title = title
+    ) +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+      axis.text.y = element_text(size = 8),
+      plot.title = element_text(size = 12)
+    )
+}
           
-          pA_row <- plot_row_scaled(M_A, paste0("Normalizado — ", grupo_A_name))
-          pB_row <- plot_row_scaled(M_B, paste0("Normalizado — ", grupo_B_name))
+pA_row <- plot_connectivity_matrix_row_scaled(
+  M_A,
+  paste0("Normalizado — ", grupo_A_name)
+)
+
+pB_row <- plot_connectivity_matrix_row_scaled(
+  M_B,
+  paste0("Normalizado — ", grupo_B_name)
+)
           
           # Combinar A y B lado a lado
           if (requireNamespace("patchwork", quietly = TRUE) && nrow(M_A) > 0 && nrow(M_B) > 0) {
@@ -1100,8 +1324,22 @@ connectivity_markers_server <- function(id, shared_pid_df, shared_metadata, shar
             if (nrow(M_A) > 0) ggsave(outA, pA, width = 10, height = 8)
             if (nrow(M_B) > 0) ggsave(outB, pB, width = 10, height = 8)
             ggsave(outAB, pAB, width = 16, height = 8)
-            if (nrow(M_A) > 0) ggsave(outA_row, pA_row, width = 10, height = 8)
-            if (nrow(M_B) > 0) ggsave(outB_row, pB_row, width = 10, height = 8)
+            if (nrow(M_A) > 0) {
+  # Calcular dimensiones dinámicamente
+  n_cats_A <- length(unique_categories)
+  plot_width_A <- max(10, n_cats_A * 0.5)  # Mínimo 10, más ancho para más categorías
+  plot_height_A <- max(8, n_cats_A * 0.4)  # Mínimo 8, más alto para más categorías
+  
+  ggsave(outA_row, pA_row, width = plot_width_A, height = plot_height_A)
+}
+
+if (nrow(M_B) > 0) {
+  n_cats_B <- length(unique_categories)
+  plot_width_B <- max(10, n_cats_B * 0.5)
+  plot_height_B <- max(8, n_cats_B * 0.4)
+  
+  ggsave(outB_row, pB_row, width = plot_width_B, height = plot_height_B)
+}
             
             # Guardar datos (no es neceseario)
             # if (nrow(M_A) > 0) saveRDS(M_A, file.path(pid_dir, paste0("markers_matrix_A", markers_tag, "_", eps_tag, ".rds")))
@@ -1172,7 +1410,12 @@ connectivity_markers_server <- function(id, shared_pid_df, shared_metadata, shar
 # ============================================================
 
 # Función para heatmap normalizado por fila (0–100%)
-plot_connectivity_matrix_row_scaled <- function(mat, title) {
+# Versión mejorada de la función para matrices grandes
+plot_connectivity_matrix_row_scaled <- function(mat, title, text_size = NULL) {
+  if (nrow(mat) == 0 || ncol(mat) == 0) {
+    return(ggplot() + geom_text(aes(x = 0.5, y = 0.5, label = "No hay datos")) + theme_void())
+  }
+  
   df <- reshape2::melt(mat)
   colnames(df) <- c("row", "col", "value")
   
@@ -1189,16 +1432,45 @@ plot_connectivity_matrix_row_scaled <- function(mat, title) {
     ungroup()
   
   n_cols <- length(unique(df$col))
+  n_rows <- length(unique(df$row))
+  
+  # ============================================
+  # NUEVO: AJUSTE DINÁMICO DEL TAMAÑO DEL TEXTO
+  # ============================================
+  # Si text_size no se proporciona, calcularlo basado en el tamaño de la matriz
+  if (is.null(text_size)) {
+    # Lógica para ajustar tamaño del texto según dimensiones de la matriz
+    max_dimension <- max(n_cols, n_rows)
+    
+    if (max_dimension <= 10) {
+      text_size <- 3.0
+    } else if (max_dimension <= 15) {
+      text_size <- 2.5
+    } else if (max_dimension <= 20) {
+      text_size <- 2.0
+    } else if (max_dimension <= 25) {
+      text_size <- 1.5
+    } else if (max_dimension <= 30) {
+      text_size <- 1.2
+    } else {
+      text_size <- 1.0  # Para matrices muy grandes
+    }
+  }
   
   df_max <- df %>%
     distinct(row, max_row) %>%
     mutate(x_pos = n_cols + 0.6)
   
+  # ============================================
+  # NUEVO: AJUSTAR TAMAÑO DE FUENTE DE LOS EJES
+  # ============================================
+  axis_text_size <- max(8, 12 - n_cols/5)  # Disminuye con más columnas, mínimo 8
+  
   ggplot(df, aes(x = col, y = row)) +
     geom_tile(aes(fill = value_norm), color = "white") +
     geom_text(
       aes(label = round(value_norm, 1)),
-      size = 3
+      size = text_size
     ) +
     geom_text(
       data = df_max,
@@ -1208,7 +1480,7 @@ plot_connectivity_matrix_row_scaled <- function(mat, title) {
         label = paste0("", round(max_row, 1))
       ),
       hjust = 0,
-      size = 3.2,
+      size = text_size * 1.1,
       inherit.aes = FALSE
     ) +
     scale_fill_viridis(
@@ -1220,12 +1492,19 @@ plot_connectivity_matrix_row_scaled <- function(mat, title) {
     theme_minimal() +
     labs(
       x = "Tipo celular destino",
-      y = "Phenotype origen",
+      y = "Tipo celular origen",
       title = title
     ) +
     theme(
-      axis.text.x = element_text(angle = 45, hjust = 1),
-      plot.title = element_text(size = 14)
+      axis.text.x = element_text(
+        angle = 45, 
+        hjust = 1, 
+        size = axis_text_size
+      ),
+      axis.text.y = element_text(size = axis_text_size),
+      plot.title = element_text(size = 14),
+      legend.title = element_text(size = 10),
+      legend.text = element_text(size = 8)
     )
 }
 

@@ -1,0 +1,450 @@
+
+R version 4.5.1 (2025-06-13) -- "Great Square Root"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> shiny::runApp(appDir = 'app.R', host = '132.248.196.32', port = 3939)
+Loading required package: shiny
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘purrr’
+
+The following object is masked from ‘package:base’:
+
+    %||%
+
+
+Attaching package: ‘DT’
+
+The following objects are masked from ‘package:shiny’:
+
+    dataTableOutput, renderDataTable
+
+
+Attaching package: ‘reshape2’
+
+The following object is masked from ‘package:tidyr’:
+
+    smiths
+
+Loading required package: viridisLite
+
+Attaching package: ‘igraph’
+
+The following object is masked from ‘package:tidyr’:
+
+    crossing
+
+The following objects are masked from ‘package:purrr’:
+
+    compose, simplify
+
+The following objects are masked from ‘package:dplyr’:
+
+    as_data_frame, groups, union
+
+The following objects are masked from ‘package:stats’:
+
+    decompose, spectrum
+
+The following object is masked from ‘package:base’:
+
+    union
+
+
+Listening on http://132.248.196.32:3939
+Rows: 2046321 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (4): archivo, type, archivo_base, FinalPhenotype
+dbl (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_circulos/subset_TOPKAT_20260124_021519/PID_seleccionados_final.csv
+Registered S3 method overwritten by 'httr':
+  method         from  
+  print.response rmutil
+Warning in scale_y_log10() :
+  log-10 transformation introduced infinite values.
+Rows: 2046321 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (4): archivo, type, archivo_base, FinalPhenotype
+dbl (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_circulos/subset_TOPKAT_20260124_131504/PID_seleccionados_final.csv
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in scale_y_log10() :
+  log-10 transformation introduced infinite values.
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260124_232205/PID_seleccionados_final.csv
+Warning in scale_y_log10() :
+  log-10 transformation introduced infinite values.
+Rows: 2046321 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (4): archivo, type, archivo_base, FinalPhenotype
+dbl (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_circulos/subset_TOPKAT_20260126_153748/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260126_153957/PID_seleccionados_final.csv
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Warning in MiRKAT_binary(y, X = X, Ks = Ks, method = method, omnibus = omnibus,  :
+  For binary outcome and n < 50, p-value using davies method can be inaccurate at tails, permutation is recommended.
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260128_171445/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260128_172058/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260128_234049/PID_seleccionados_final.csv
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260128_234057/PID_seleccionados_final.csv
+Warning in scale_y_log10() :
+  log-10 transformation introduced infinite values.
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_162626/PID_seleccionados_final.csv
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_163006/PID_seleccionados_final.csv
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_163400/PID_seleccionados_final.csv
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+Rows: 150 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (7): archivo_base, category_raw, category, FA_status, subcategory, grupo...
+dbl (2): PID, PID_chr
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+Rows: 150 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (7): archivo_base, category_raw, category, FA_status, subcategory, grupo...
+dbl (2): PID, PID_chr
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_170210/PID_seleccionados_final.csv
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_171533/PID_seleccionados_final.csv
+Warning in davies(0, lambda = lambda0, acc = 1e-06) :
+  Consider playing with 'lim' or 'acc'.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_174258/PID_seleccionados_final.csv
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_174311/PID_seleccionados_final.csv
+Warning in scale_y_log10() :
+  log-10 transformation introduced infinite values.
+Rows: 200 Columns: 9
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (7): archivo_base, category_raw, category, FA_status, subcategory, grupo...
+dbl (2): PID, PID_chr
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_175350/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_201850/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_202612/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_205014/PID_seleccionados_final.csv
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_205036/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_211144/PID_seleccionados_final.csv
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_211313/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_230632/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_232117/PID_seleccionados_final.csv
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_232421/PID_seleccionados_final.csv
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260129_233101/PID_seleccionados_final.csv
+Rows: 8159927 Columns: 16
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (11): archivo, region, type, FinalPhenotype, tim3, pd_l1, pd_1, p_s6, ki...
+dbl  (5): PID, id, x, y, CellID
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+✔ Guardado CSV: /home/jupyter-luisraul/topkat-explorer-app/data_selection/subset_TOPKAT_20260203_170325/PID_seleccionados_final.csv

@@ -1,0 +1,7 @@
+PID,archivo_base,category_raw,category,FA_status,subcategory,grupo,group_name,PID_chr
+442,carcinoma_invasive_F9P2_18,carcinoma_invasive_F9P2_18,carcinoma,FA,carcinoma_invasive,A,carcinoma FA,442
+43,carcinoma_invasive_FAHNSCC_11C_18,carcinoma_invasive_FAHNSCC_11C_18,carcinoma,FA,carcinoma_invasive,A,carcinoma FA,43
+475,carcinoma_in_situ_FAAGSCC_9_6,carcinoma_in_situ_FAAGSCC_9_6,carcinoma,FA,carcinoma_in_situ,A,carcinoma FA,475
+970,carcinoma_invasive_AGSCC_1_46,carcinoma_invasive_AGSCC_1_46,carcinoma,NOFA,carcinoma_invasive,B,carcinoma NOFA,970
+202,carcinoma_invasive_HNSCC_7_120,carcinoma_invasive_HNSCC_7_120,carcinoma,NOFA,carcinoma_invasive,B,carcinoma NOFA,202
+1006,carcinoma_invasive_AGSCC_6_2,carcinoma_invasive_AGSCC_6_2,carcinoma,NOFA,carcinoma_invasive,B,carcinoma NOFA,1006
