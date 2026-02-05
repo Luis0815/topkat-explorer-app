@@ -130,7 +130,7 @@ library(TopKAT)
 install.packages(c(
   "shiny", "shinyWidgets", "shinycssloaders", "dplyr", "tidyr",
   "ggplot2", "reshape2", "stringr", "readr", "purrr", "viridis",
-  "igraph", "here", "base64enc"
+  "igraph", "here", "base64enc","svglite","DT"
 ))
 ```
 
