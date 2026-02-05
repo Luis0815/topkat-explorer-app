@@ -177,7 +177,7 @@ El módulo **TopKAT** requiere además los archivos:
 
 ---
 
-## 🚀 Cómo clonar y ejecutar el repositorio
+##  Cómo clonar y ejecutar el repositorio
 
 ### Clonar (SSH)
 
@@ -186,14 +186,22 @@ git clone git@github.com:USUARIO/NOMBRE_REPO.git
 cd NOMBRE_REPO
 ```
 
-### Ejecutar desde R
+### Ejecutar desde R (servidor)
 
 ```r
 setwd("/ruta/a/tu/NOMBRE_REPO")
 
 shiny::runApp(
-  appDir = "app_v3.R",
+  appDir = "app.R",
   host = "132.132.132.132",   # ejemplo
   port = 1111                  # ejemplo
 )
+```
+
+### Ejecutar desde R (local)
+
+```r
+setwd("/ruta/a/tu/NOMBRE_REPO")
+
+shiny::runApp("app.R")
 ```
