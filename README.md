@@ -106,6 +106,16 @@ Todo se guarda directamente en el subset generado por TopKAT.
 
 ## 🔹 Librerías necesarias
 
+### Instalación rápida
+
+```r
+install.packages(c(
+  "shiny", "shinyWidgets", "shinycssloaders", "dplyr", "tidyr",
+  "ggplot2", "reshape2", "stringr", "readr", "purrr", "viridis",
+  "igraph", "here", "base64enc","svglite","DT"
+))
+```
+
 ```r
 library(shiny)
 library(shinyWidgets)
@@ -122,16 +132,8 @@ library(igraph)
 library(here)
 library(base64enc)
 library(TopKAT)
-```
-
-### Instalación rápida
-
-```r
-install.packages(c(
-  "shiny", "shinyWidgets", "shinycssloaders", "dplyr", "tidyr",
-  "ggplot2", "reshape2", "stringr", "readr", "purrr", "viridis",
-  "igraph", "here", "base64enc","svglite","DT"
-))
+library(svglite)
+library(DT)
 ```
 
 ---
